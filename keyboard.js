@@ -60,9 +60,9 @@ export const keyboard = [
     upperOffset: 9.65,
     upperWidth: 13.95
   }
-];
+]
 
-export const accidentals = [1, 3, 6, 8, 10];
+export const accidentals = [1, 3, 6, 8, 10]
 
 export const _defaultOptions = {
   scaleX: 1,
@@ -78,29 +78,29 @@ export const _defaultOptions = {
   keyCount: 88,
   range: ['A0', 'C8'],
   topLabels: false
-}; // visibleKeys
+} // visibleKeys
 
 export function defaultOptions(options) {
   if (options.range) {
     options = {
       ...options,
       ...rangeOptions(options.range)
-    };
+    }
   }
-  return Object.assign({}, _defaultOptions, options);
+  return Object.assign({}, _defaultOptions, options)
 }
 
 /** computes keyCount and keyOffset from range array ([SPN,SPN]) */
 export function rangeOptions(range) {
-  const pitches = range.map(note => note.slice(0, -1));
-  const first = keyboard.find(key => key.pitches.includes(pitches[0]));
-  const last = keyboard.find(key => key.pitches.includes(pitches[1]));
-  const offsetLeft = keyboard.indexOf(first);
-  const offsetRight = 12 - keyboard.indexOf(last);
-  const octaves = range.map(note => parseInt(note.slice(note.length - 1)));
+  const pitches = range.map(note => note.slice(0, -1))
+  const first = keyboard.find(key => key.pitches.includes(pitches[0]))
+  const last = keyboard.find(key => key.pitches.includes(pitches[1]))
+  const offsetLeft = keyboard.indexOf(first)
+  const offsetRight = 12 - keyboard.indexOf(last)
+  const octaves = range.map(note => parseInt(note.slice(note.length - 1)))
   const keyCount =
-    (octaves[1] - octaves[0] + 1) * 12 - offsetLeft - offsetRight + 1;
-  return { keyCount, keyOffset: offsetLeft };
+    (octaves[1] - octaves[0] + 1) * 12 - offsetLeft - offsetRight + 1
+  return { keyCount, keyOffset: offsetLeft }
 }
 
 export function getKeySizes(options) {
@@ -111,7 +111,7 @@ export function getKeySizes(options) {
     strokeWidth,
     palette,
     stroke
-  } = defaultOptions(options);
+  } = defaultOptions(options)
   return keyboard.map((key, index) =>
     Object.assign(key, {
       // add black/white specific props > black keys have no lower part
@@ -123,12 +123,12 @@ export function getKeySizes(options) {
       stroke,
       strokeWidth
     })
-  );
+  )
 }
 
 export function renderKeys(options) {
-  options = defaultOptions(options);
-  const keySizes = getKeySizes(options);
+  options = defaultOptions(options)
+  const keySizes = getKeySizes(options)
   let {
     keyCount,
     scaleY,
@@ -138,14 +138,14 @@ export function renderKeys(options) {
     strokeWidth,
     keyOffset,
     colorize
-  } = options;
+  } = options
 
   return Array(keyCount + keyOffset)
     .fill(0)
     .map((key, index, _keys) => keySizes[index % 12])
     .map((key, index, _keys) => {
-      const octave = getOctave(index, options.range, keyOffset);
-      const notes = key.pitches.map(pitch => pitch + octave);
+      const octave = getOctave(index, options.range, keyOffset)
+      const notes = key.pitches.map(pitch => pitch + octave)
       return {
         index,
         notes,
@@ -166,30 +166,30 @@ export function renderKeys(options) {
         offsetX:
           getKeyOffset(index, _keys, lowerWidth, keyOffset) * scaleX +
           Math.ceil(strokeWidth / 2)
-      };
+      }
     })
-    .filter(key => key.index >= keyOffset);
+    .filter(key => key.index >= keyOffset)
 }
 
 export function getKeyElements(options) {
-  options = defaultOptions(options);
-  const keys = renderKeys(options);
+  options = defaultOptions(options)
+  const keys = renderKeys(options)
   return keys.map(key => {
     if (!key.visible) {
-      return;
+      return
     }
-    let circle, text;
+    let circle, text
     const label = options.labels
       ? key.notes.find(n => !!Object.keys(options.labels).includes(n))
-      : '';
+      : ''
 
     if (label) {
-      const textElements = getTextElements(key, options.topLabels);
-      circle = textElements.circle;
-      text = textElements.text;
-      text.value = options.labels[label];
+      const textElements = getTextElements(key, options.topLabels)
+      circle = textElements.circle
+      text = textElements.text
+      text.value = options.labels[label]
     }
-    const points = getPoints(key);
+    const points = getPoints(key)
     return {
       key,
       polygon: {
@@ -202,45 +202,45 @@ export function getKeyElements(options) {
       },
       circle,
       text
-    };
-  });
+    }
+  })
 }
 
 export function getOctave(index, range, keyOffset) {
-  const overflow = Math.floor(index / 12);
-  const octaves = range.map(note => parseInt(note.slice(note.length - 1)));
-  const octave = overflow + octaves[0];
-  return octave;
+  const overflow = Math.floor(index / 12)
+  const octaves = range.map(note => parseInt(note.slice(note.length - 1)))
+  const octave = overflow + octaves[0]
+  return octave
 }
 
 export function getColorization(notes, colorize) {
   if (!colorize) {
-    return null;
+    return null
   }
   const match = colorize.find(
     color => !!color.keys.find(key => notes.includes(key))
-  );
-  return match ? match.color : null;
+  )
+  return match ? match.color : null
 }
 
 export function upperWidth(key, index, offset, keyCount) {
-  const isFirst = index => index === offset;
-  const isLast = index => index === keyCount + offset - 1;
+  const isFirst = index => index === offset
+  const isLast = index => index === keyCount + offset - 1
   if (isFirst(index)) {
-    return key.upperWidth + key.upperOffset;
+    return key.upperWidth + key.upperOffset
   }
   if (isLast(index)) {
-    return key.lowerWidth - key.upperOffset;
+    return key.lowerWidth - key.upperOffset
   }
-  return key.upperWidth;
+  return key.upperWidth
 }
 
 function upperOffset(key, index, keyOffset, keyCount) {
-  const isFirst = index => index === keyOffset;
+  const isFirst = index => index === keyOffset
   if (isFirst(index)) {
-    return 0;
+    return 0
   }
-  return key.upperOffset;
+  return key.upperOffset
 }
 
 export function whiteIndex(index) {
@@ -249,23 +249,23 @@ export function whiteIndex(index) {
       .fill(0)
       .filter((_, i) => !accidentals.includes(i)).length +
     Math.floor(index / 12) * 7
-  );
+  )
 }
 
 export function getKeyOffset(index, keys, lowerWidth, keyOffset = 0) {
-  const wi = whiteIndex(index);
-  const oi = whiteIndex(keyOffset);
-  let firstOffset = keys[keyOffset].upperOffset;
+  const wi = whiteIndex(index)
+  const oi = whiteIndex(keyOffset)
+  let firstOffset = keys[keyOffset].upperOffset
   if (accidentals.includes(keyOffset % 12)) {
-    const whiteKeyBefore = keyboard[(keyOffset + 12 - 1) % 12];
+    const whiteKeyBefore = keyboard[(keyOffset + 12 - 1) % 12]
     firstOffset -=
-      lowerWidth - (whiteKeyBefore.upperWidth + whiteKeyBefore.upperOffset);
+      lowerWidth - (whiteKeyBefore.upperWidth + whiteKeyBefore.upperOffset)
   }
   return !accidentals.includes(index % 12)
     ? wi * lowerWidth - oi * lowerWidth
     : keys
         .slice(keyOffset, index)
-        .reduce((sum, _key, _index) => sum + _key.upperWidth, 0) + firstOffset;
+        .reduce((sum, _key, _index) => sum + _key.upperWidth, 0) + firstOffset
 }
 
 export function totalDimensions(options) {
@@ -277,12 +277,12 @@ export function totalDimensions(options) {
     lowerHeight,
     upperHeight,
     strokeWidth
-  } = defaultOptions(options);
+  } = defaultOptions(options)
 
   return [
-    scaleX * lowerWidth * whiteIndex(keyCount + 1),
+    scaleX * lowerWidth * whiteIndex(keyCount),
     (lowerHeight + upperHeight) * scaleY
-  ].map(c => Math.round(c + strokeWidth * 2)); // >svg adds stroke around actual widths
+  ].map(c => Math.round(c + strokeWidth * 2)) // >svg adds stroke around actual widths
 }
 
 export function getPoints(key, round = true) {
@@ -294,8 +294,8 @@ export function getPoints(key, round = true) {
     lowerHeight,
     upperWidth,
     lowerWidth
-  } = defaultOptions(key);
-  const totalHeight = lowerHeight + upperHeight;
+  } = defaultOptions(key)
+  const totalHeight = lowerHeight + upperHeight
   return [
     [upperOffset + offsetX, offsetY],
     [upperOffset + offsetX, upperHeight + offsetY],
@@ -305,7 +305,7 @@ export function getPoints(key, round = true) {
     [lowerWidth + offsetX, upperHeight + offsetY],
     [upperWidth + upperOffset + offsetX, upperHeight + offsetY],
     [upperWidth + upperOffset + offsetX, offsetY]
-  ];
+  ]
 }
 
 export function getTextElements(key, top = false, fill = 'white') {
@@ -316,11 +316,11 @@ export function getTextElements(key, top = false, fill = 'white') {
     upperOffset,
     upperWidth,
     strokeWidth
-  } = defaultOptions(key);
-  const radius = (key.scaleX * (12.7 - strokeWidth * 2)) / 2;
-  const w = key.lowerWidth || key.upperWidth;
-  const x = top ? offsetX + upperWidth / 2 + upperOffset : offsetX + w / 2;
-  const y = top ? radius * 2 : upperHeight + lowerHeight - radius;
+  } = defaultOptions(key)
+  const radius = (key.scaleX * (12.7 - strokeWidth * 2)) / 2
+  const w = key.lowerWidth || key.upperWidth
+  const x = top ? offsetX + upperWidth / 2 + upperOffset : offsetX + w / 2
+  const y = top ? radius * 2 : upperHeight + lowerHeight - radius
   return {
     circle: {
       cx: x,
@@ -337,33 +337,33 @@ export function getTextElements(key, top = false, fill = 'white') {
       fontSize: radius,
       fontFamily: 'helvetica'
     }
-  };
+  }
 }
 
 export function renderPiano(container, _options) {
-  const xmlns = 'http://www.w3.org/2000/svg';
-  const options = defaultOptions(_options);
-  const dimensions = totalDimensions(options);
-  const svg = document.createElementNS(xmlns, 'svg');
+  const xmlns = 'http://www.w3.org/2000/svg'
+  const options = defaultOptions(_options)
+  const dimensions = totalDimensions(options)
+  const svg = document.createElementNS(xmlns, 'svg')
 
   svg.setAttributeNS(
     null,
     'viewBox',
     '0 0 ' + dimensions[0] + ' ' + dimensions[1]
-  );
-  svg.setAttributeNS(null, 'style', 'margin:0');
-  svg.setAttributeNS(null, 'width', dimensions[0]);
-  svg.setAttributeNS(null, 'height', dimensions[1]);
+  )
+  svg.setAttributeNS(null, 'style', 'margin:0')
+  svg.setAttributeNS(null, 'width', dimensions[0])
+  svg.setAttributeNS(null, 'height', dimensions[1])
 
-  const keys = getKeyElements(options);
+  const keys = getKeyElements(options)
 
   keys.forEach(elements => {
-    const { key, polygon, circle, text } = elements;
-    const p = document.createElementNS(xmlns, 'polygon');
-    p.setAttributeNS(null, 'points', polygon.points);
-    p.setAttributeNS(null, 'fill', polygon.style.fill);
-    p.setAttributeNS(null, 'stroke', polygon.style.stroke);
-    p.setAttributeNS(null, 'stroke-width', polygon.style.strokeWidth);
+    const { key, polygon, circle, text } = elements
+    const p = document.createElementNS(xmlns, 'polygon')
+    p.setAttributeNS(null, 'points', polygon.points)
+    p.setAttributeNS(null, 'fill', polygon.style.fill)
+    p.setAttributeNS(null, 'stroke', polygon.style.stroke)
+    p.setAttributeNS(null, 'stroke-width', polygon.style.strokeWidth)
     p.setAttributeNS(
       null,
       'class',
@@ -371,29 +371,29 @@ export function renderPiano(container, _options) {
         (classes, note, index) => classes + (index ? ' ' : '') + 'key-' + note,
         ''
       )
-    );
-    svg.appendChild(p);
+    )
+    svg.appendChild(p)
     if (circle) {
-      const c = document.createElementNS(xmlns, 'circle');
-      c.setAttributeNS(null, 'cx', circle.cx);
-      c.setAttributeNS(null, 'cy', circle.cy);
-      c.setAttributeNS(null, 'r', circle.r);
-      c.setAttributeNS(null, 'fill', circle.fill);
-      c.setAttributeNS(null, 'stroke', circle.stroke);
-      c.setAttributeNS(null, 'stroke-width', circle.strokeWidth);
-      svg.appendChild(c);
+      const c = document.createElementNS(xmlns, 'circle')
+      c.setAttributeNS(null, 'cx', circle.cx)
+      c.setAttributeNS(null, 'cy', circle.cy)
+      c.setAttributeNS(null, 'r', circle.r)
+      c.setAttributeNS(null, 'fill', circle.fill)
+      c.setAttributeNS(null, 'stroke', circle.stroke)
+      c.setAttributeNS(null, 'stroke-width', circle.strokeWidth)
+      svg.appendChild(c)
     }
 
     if (text) {
-      const t = document.createElementNS(xmlns, 'text');
-      t.setAttributeNS(null, 'x', text.x);
-      t.setAttributeNS(null, 'y', text.y);
-      t.setAttributeNS(null, 'text-anchor', text.textAnchor);
-      t.setAttributeNS(null, 'font-size', text.fontSize);
-      t.setAttributeNS(null, 'font-family', text.fontFamily);
-      t.innerHTML = text.value;
-      svg.appendChild(t);
+      const t = document.createElementNS(xmlns, 'text')
+      t.setAttributeNS(null, 'x', text.x)
+      t.setAttributeNS(null, 'y', text.y)
+      t.setAttributeNS(null, 'text-anchor', text.textAnchor)
+      t.setAttributeNS(null, 'font-size', text.fontSize)
+      t.setAttributeNS(null, 'font-family', text.fontFamily)
+      t.innerHTML = text.value
+      svg.appendChild(t)
     }
-  });
-  container.appendChild(svg);
+  })
+  container.appendChild(svg)
 }
