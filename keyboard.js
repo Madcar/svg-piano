@@ -1,7 +1,7 @@
 // https://de.wikipedia.org/wiki/Datei:Pianoteilung.svg
 export const keyboard = [
   {
-    pitches: ['C', 'B#'],
+    pitches: ['C'],
     upperOffset: 0,
     upperWidth: 15.05
   },
@@ -26,7 +26,7 @@ export const keyboard = [
     upperWidth: 15.05
   },
   {
-    pitches: ['F', 'E#'],
+    pitches: ['F'],
     upperOffset: 0,
     upperWidth: 13.95
   },
@@ -56,7 +56,7 @@ export const keyboard = [
     upperWidth: 12.7
   },
   {
-    pitches: ['B', 'Cb'],
+    pitches: ['B'],
     upperOffset: 9.65,
     upperWidth: 13.95
   }
